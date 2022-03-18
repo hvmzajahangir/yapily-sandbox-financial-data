@@ -1,9 +1,19 @@
-import { StyleSheet, View, Image } from "react-native";
+import { StyleSheet, Image } from "react-native";
 import { useGetInstitutionsQuery } from "../services/yapily";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Layout, Text, Input, Button, Icon, Card } from "@ui-kitten/components";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { useNavigation } from "@react-navigation/native";
+import { setSelectedInstitution } from "../slices/selectedInstitutionSlice";
+import { useAppDispatch } from "../hooks/rtk";
 
-export default function InstitutionsScreen() {
+export type Nav = {
+  navigate: (value: string) => void;
+};
+
+export default function InstitutionsScreen(): JSX.Element {
+  const navigation = useNavigation<Nav>();
+  const dispatch = useAppDispatch();
   const { data: institutions, error, isLoading } = useGetInstitutionsQuery();
   return (
     <Layout style={styles.container}>
@@ -14,10 +24,18 @@ export default function InstitutionsScreen() {
         {institutions?.length
           ? institutions.map((institution: any) => {
               return (
-                <Layout
+                <TouchableOpacity
                   style={styles.institution}
                   key={institution.id}
-                  level="3"
+                  onPress={async () => {
+                    await dispatch(
+                      setSelectedInstitution({
+                        id: institution.id,
+                        name: institution.name,
+                      })
+                    );
+                    navigation.navigate("ConsentScreen");
+                  }}
                 >
                   <Image
                     style={styles.tinyLogo}
@@ -26,7 +44,7 @@ export default function InstitutionsScreen() {
                     }}
                   />
                   <Text style={styles.text}>{institution.name}</Text>
-                </Layout>
+                </TouchableOpacity>
               );
             })
           : null}
@@ -43,9 +61,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   institutionList: {
-    flexDirection: "column",
-    alignItems: "center",
-    padding: 20,
+    marginTop: 20,
     borderRadius: 10,
     width: "100%",
   },
@@ -56,10 +72,12 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     width: "100%",
+    backgroundColor: "#263859",
   },
   tinyLogo: {
     width: 50,
     height: 50,
+    borderRadius: 5,
   },
   text: {
     marginVertical: 10,

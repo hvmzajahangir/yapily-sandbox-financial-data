@@ -10,6 +10,12 @@ const yapilyAppSecret: string | undefined =
   Constants?.manifest?.extra?.yapilyAppSecret;
 const yapilyAppToken: string = encode(`${yapilyAppKey}:${yapilyAppSecret}`);
 
+export type RequestAccountAuthBody = {
+  applicationUserId: string;
+  institutionId: string;
+  callback: string;
+};
+
 export const yapilyApi = createApi({
   reducerPath: "yapilyApi",
   baseQuery: fetchBaseQuery({
@@ -27,7 +33,15 @@ export const yapilyApi = createApi({
         return response.data;
       },
     }),
+    requestAccountAuth: builder.query<any, RequestAccountAuthBody>({
+      query: (body) => ({
+        url: `/account-auth-requests`,
+        method: "POST",
+        body,
+      }),
+    }),
   }),
 });
 
-export const { useGetInstitutionsQuery } = yapilyApi;
+export const { useGetInstitutionsQuery, useRequestAccountAuthQuery } =
+  yapilyApi;
