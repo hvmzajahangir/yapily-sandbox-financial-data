@@ -80,6 +80,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   text: {
-    marginVertical: 10,
+    marginTop: 10,
   },
 });

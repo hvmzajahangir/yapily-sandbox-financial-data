@@ -1,7 +1,7 @@
 import { StyleSheet, Linking, View, Image } from "react-native";
 import { useRequestAccountAuthQuery } from "../services/yapily";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Layout, Text, Input, Button, Icon, Card } from "@ui-kitten/components";
+import { Layout, Text, Button, Spinner } from "@ui-kitten/components";
 import { selectSelectedInstitution } from "../slices/selectedInstitutionSlice";
 import { useAppSelector } from "../hooks/rtk";
 
@@ -43,7 +43,7 @@ export default function ConsentScreen(): JSX.Element {
           </Button>
         </>
       ) : (
-        <Text>Loading...</Text>
+        <Spinner />
       )}
     </Layout>
   );
