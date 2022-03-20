@@ -40,8 +40,23 @@ export const yapilyApi = createApi({
         body,
       }),
     }),
+    getAccountInformation: builder.query<any, string>({
+      query: (consentToken: string) => ({
+        url: "accounts",
+        method: "GET",
+        headers: {
+          Consent: consentToken,
+        },
+      }),
+      transformResponse: (response: any) => {
+        return response.data;
+      },
+    }),
   }),
 });
 
-export const { useGetInstitutionsQuery, useRequestAccountAuthQuery } =
-  yapilyApi;
+export const {
+  useGetInstitutionsQuery,
+  useRequestAccountAuthQuery,
+  useGetAccountInformationQuery,
+} = yapilyApi;
