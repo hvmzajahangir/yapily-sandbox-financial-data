@@ -30,7 +30,6 @@ export default function ConsentScreen(): JSX.Element {
     callback: Linking.createURL("/?"),
   };
   const { data, isLoading, error } = useRequestAccountAuthQuery(body);
-
   const [result, setResult] = useState<any>({});
 
   const handleRedirect = (event: Linking.EventType) => {
