@@ -34,5 +34,6 @@ export default {
       yapilyAppKey: process.env.YAPILY_APP_KEY,
       yapilyAppSecret: process.env.YAPILY_APP_SECRET,
     },
+    scheme: "expo.examples.with-webbrowser-redirect",
   },
 };

@@ -2,10 +2,12 @@ import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import { yapilyApi } from "./services/yapily";
 import selectedInstitutionReducer from "./slices/selectedInstitutionSlice";
+import consentSliceReducer from "./slices/consentSlice";
 
 export const store = configureStore({
   reducer: {
     selectedInstitution: selectedInstitutionReducer,
+    consent: consentSliceReducer,
     [yapilyApi.reducerPath]: yapilyApi.reducer,
   },
   // Enable caching, invalidation, polling and other rtk-query features

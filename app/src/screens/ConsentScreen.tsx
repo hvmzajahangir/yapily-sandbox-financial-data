@@ -1,9 +1,14 @@
-import { StyleSheet, Linking, View, Image } from "react-native";
+import { useState, useEffect } from "react";
+import { StyleSheet, View, Image } from "react-native";
 import { useRequestAccountAuthQuery } from "../services/yapily";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { Layout, Text, Button, Spinner } from "@ui-kitten/components";
 import { selectSelectedInstitution } from "../slices/selectedInstitutionSlice";
-import { useAppSelector } from "../hooks/rtk";
+import { setConsentToken } from "../slices/consentSlice";
+import { useAppSelector, useAppDispatch } from "../hooks/rtk";
+import * as Linking from "expo-linking";
+import * as WebBrowser from "expo-web-browser";
+import Constants from "expo-constants";
+import { useNavigation } from "@react-navigation/native";
 
 export type RequestAccountAuthBody = {
   applicationUserId: string;
@@ -11,14 +16,58 @@ export type RequestAccountAuthBody = {
   callback: string;
 };
 
+export type Nav = {
+  navigate: (value: string) => void;
+};
+
 export default function ConsentScreen(): JSX.Element {
+  const dispatch = useAppDispatch();
+  const navigation = useNavigation<Nav>();
   const selectedInstitution = useAppSelector(selectSelectedInstitution);
   const body: RequestAccountAuthBody = {
     applicationUserId: "account-data-and-transactions-demo",
     institutionId: selectedInstitution.id,
-    callback: "https://display-parameters.com/",
+    callback: Linking.createURL("/?"),
   };
   const { data, isLoading, error } = useRequestAccountAuthQuery(body);
+
+  const [result, setResult] = useState<any>({});
+
+  const handleRedirect = (event: Linking.EventType) => {
+    if (Constants?.platform?.ios) {
+      WebBrowser.dismissBrowser();
+    } else {
+      Linking.removeEventListener("url", handleRedirect);
+    }
+
+    let data = Linking.parse(event.url);
+
+    setResult({ redirectData: data });
+  };
+
+  const openBrowserAsync = async (url: string) => {
+    try {
+      Linking.addEventListener("url", handleRedirect);
+      let result = await WebBrowser.openBrowserAsync(url);
+
+      // https://github.com/expo/expo/issues/5555
+      if (Constants?.platform?.ios) {
+        Linking.removeEventListener("url", handleRedirect);
+      }
+
+      setResult({ result });
+    } catch (error) {
+      alert(error);
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (result.redirectData && result.redirectData.queryParams.consent) {
+      dispatch(setConsentToken(result.redirectData.queryParams.consent));
+      navigation.navigate("AccountScreen");
+    }
+  }, [result]);
 
   return (
     <Layout style={styles.container}>
@@ -36,7 +85,7 @@ export default function ConsentScreen(): JSX.Element {
             style={styles.confirmationButton}
             status="success"
             onPress={() => {
-              Linking.openURL(data.data.authorisationUrl);
+              openBrowserAsync(data.data.authorisationUrl);
             }}
           >
             Confirm

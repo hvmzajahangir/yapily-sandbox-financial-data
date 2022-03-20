@@ -7,10 +7,12 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import InstitutionsScreen from "./src/screens/InstitutionsScreen";
 import ConsentScreen from "./src/screens/ConsentScreen";
+import AccountScreen from "./src/screens/AccountScreen";
 
 export type RootStackParamList = {
   InstitutionsScreen: undefined;
   ConsentScreen: undefined;
+  AccountScreen: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -29,6 +31,11 @@ export default function App(): JSX.Element {
             <Stack.Screen
               name="ConsentScreen"
               component={ConsentScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="AccountScreen"
+              component={AccountScreen}
               options={{ headerShown: false }}
             />
           </Stack.Navigator>
